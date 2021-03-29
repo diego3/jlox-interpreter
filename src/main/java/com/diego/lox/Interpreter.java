@@ -1,5 +1,6 @@
 package com.diego.lox;
 
+//https://craftinginterpreters.com/evaluating-expressions.html#evaluating-unary-expressions
 public class Interpreter implements Expr.Visitor<Object> {
 
 
@@ -12,10 +13,8 @@ public class Interpreter implements Expr.Visitor<Object> {
         return "";
     }
 
-    private Object evaluate(Expr expression) {
-
-
-        return null;
+    private Object evaluate(Expr expr) {
+        return expr.accept(this);
     }
 
     @Override
@@ -25,12 +24,12 @@ public class Interpreter implements Expr.Visitor<Object> {
 
     @Override
     public Object visitGroupingExpr(Expr.Grouping expr) {
-        return null;
+        return evaluate(expr.expression);
     }
 
     @Override
     public Object visitLiteralExpr(Expr.Literal expr) {
-        return null;
+        return expr.value;
     }
 
     @Override
