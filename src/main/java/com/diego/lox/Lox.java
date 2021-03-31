@@ -41,13 +41,13 @@ public class Lox {
         var tokens = scanner.scanTokens();
         //tokens.forEach((t) -> System.out.println(t.toString()));
         var parser = new Parser(tokens);
-        Expr expression = parser.parse();
+        List<Stmt> statements = parser.parse();
 
         if (hadError) return;
 
         //System.out.println(new AstPrinter().print(expression));
 
-        interpreter.interpret(expression);
+        interpreter.interpret(statements);
     }
 
     public static void error(Token token, String message) {

@@ -1,11 +1,16 @@
 package com.diego.lox;
 
-public class Interpreter implements Expr.Visitor<Object> {
+import java.util.List;
 
-    public void interpret(Expr expression) {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+
+    public void interpret(List<Stmt> statements) {
         try {
-            Object value = evaluate(expression);
-            System.out.println(stringify(value));
+//            Object value = evaluate(expression);
+//            System.out.println(stringify(value));
+            for(Stmt statement : statements) {
+                execute(statement);
+            }
         } catch (RuntimeError e) {
             Lox.runtimeError(e);
         }
@@ -25,6 +30,23 @@ public class Interpreter implements Expr.Visitor<Object> {
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
+    }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
+    }
+
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object value = evaluate(stmt.expression);
+        System.out.println(stringify(value));
+        return null;
     }
 
     @Override
@@ -136,5 +158,6 @@ public class Interpreter implements Expr.Visitor<Object> {
         if (isDouble(left) && isDouble(right)) return;
         throw new RuntimeError(operator, "Operands must be numbers");
     }
+
 
 }

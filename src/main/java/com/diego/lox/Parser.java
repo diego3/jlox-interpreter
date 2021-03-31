@@ -1,11 +1,12 @@
 package com.diego.lox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.diego.lox.TokenType.*;
 
 /**
- * @see "lox.grammar" file
+ * @see "lox.grammar" file for grammar rules
  */
 public class Parser {
     private static class ParseError extends RuntimeException{}
@@ -17,13 +18,36 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError e) {
-            System.err.println("parseError: "+e.getMessage());
-            return null;
+    public List<Stmt> parse() {
+//        try {
+//            return expression();
+//        } catch (ParseError e) {
+//            System.err.println("parseError: "+e.getMessage());
+//            return null;
+//        }
+        List<Stmt> statements = new ArrayList<>();
+        while(!isAtEnd()) {
+            statements.add(statement());
         }
+        return statements;
+    }
+
+    private Stmt statement() {
+        if (match(PRINT)) return printStatement();
+
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Expression(expr);
     }
 
     // expression     → equality
